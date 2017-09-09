@@ -2,8 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry kind="lib" path="/Users/peter/Desktop/Minecraft Servers/private/plugins/ProtocolLib.jar"/>
-	<classpathentry kind="lib" path="/Users/peter/Desktop/Minecraft Servers/private/spigot-1.12.1.jar"/>
-	<classpathentry kind="lib" path="/Users/peter/Desktop/Minecraft Servers/private/plugins/PlaceholderAPI-2.8.2.jar"/>
+	<classpathentry kind="lib" path="/Users/peter/Development/Libraries/spigot-1.12.1.jar"/>
+	<classpathentry kind="lib" path="/Users/peter/Development/Libraries/ProtocolLib.jar"/>
+	<classpathentry kind="lib" path="/Users/peter/Development/Libraries/PlaceholderAPI-2.8.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
