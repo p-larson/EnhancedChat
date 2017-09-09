@@ -18,4 +18,7 @@ public class KeywordManager {
 	}
 	
 	
+	public enum KeywordType {
+		PLAYER, TOWN, NATION, CUSTOM;
+	}
 }
