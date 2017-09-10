@@ -5,8 +5,8 @@ import java.util.List;
 
 public class Keyword {
 
-	private String name, onClick;
-	private List<String> onHover = new ArrayList<String>();
+	private String name;
+	private List<String> onHover = new ArrayList<String>(), onClick = new ArrayList<String>();
 	
 	
 	public String getName() {
@@ -21,5 +21,9 @@ public class Keyword {
 	@Override
 	public String toString() {
 		return SettingsManager.CASE_SENSITIVE ? name:name.toLowerCase();
+	}
+	
+	public enum Type {
+		PLAYER, TOWNY;
 	}
 }

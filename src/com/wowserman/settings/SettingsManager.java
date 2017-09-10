@@ -1,5 +1,6 @@
 package com.wowserman.settings;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import com.wowserman.EnhancedChat;
@@ -7,6 +8,12 @@ import com.wowserman.EnhancedChat;
 public class SettingsManager {
 
 	private static FileConfiguration config;
+	
+	public void read(ConfigurationSection section) {
+		
+		
+		
+	}
 	
 	public static boolean CASE_SENSITIVE = false;
 	

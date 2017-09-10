@@ -2,12 +2,13 @@ package com.wowserman.listeners;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
@@ -16,6 +17,7 @@ import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -23,6 +25,8 @@ import net.md_5.bungee.chat.ComponentSerializer;
 
 import com.comphenix.protocol.wrappers.EnumWrappers.ChatType;
 import com.wowserman.EnhancedChat;
+import com.wowserman.api.PopulateKeywordEvent;
+import com.wowserman.api.SearchForKeywordEvent;
 
 public class ChatListener extends PacketAdapter {
 
@@ -53,6 +57,8 @@ public class ChatListener extends PacketAdapter {
 		List<TextComponent> list = new ArrayList<TextComponent>();
 		
 		List<String> splits = new ArrayList<String>();
+		
+		HashMap<String, SearchForKeywordEvent> map = new HashMap<String, SearchForKeywordEvent>();
 		
 		splits.addAll(Arrays.asList(fullMessage.split(String.valueOf(ChatColor.COLOR_CHAR))));
 		
@@ -92,14 +98,18 @@ public class ChatListener extends PacketAdapter {
 				}
 				
 			}
-						
-			String variable = EnhancedChat.getVariableName(split);
 			
-			if (variable != null && variable.length()!=split.length()) {
+			SearchForKeywordEvent search = new SearchForKeywordEvent(split, event.getPlayer());
+			
+			Bukkit.getPluginManager().callEvent(search);
+			
+			if (search.hasFoundKeyword() && search.getFoundKeyword().length() != split.length()) {
 				
-				int index = split.toLowerCase().indexOf(variable.toLowerCase());
+				map.put(search.getFoundKeyword(), search);
 				
-				String cut = split.substring(index, index + variable.length());
+				int index = split.toLowerCase().indexOf(search.getFoundKeyword().toLowerCase());
+				
+				String cut = split.substring(index, index + search.getFoundKeyword().length());
 				
 				List<String> remainders = new ArrayList<String>();
 				
@@ -170,14 +180,23 @@ public class ChatListener extends PacketAdapter {
 		TextComponent component = new TextComponent("");
 				
 		for (TextComponent subComponent:list) {
+						
+			final SearchForKeywordEvent search = map.get(subComponent.getText());
 			
-			List<String> value = EnhancedChat.getValueOfVariable(subComponent.getText());
-			
-			if (value != null) 
-				subComponent.setHoverEvent(new HoverEvent(net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT,
-						new ComponentBuilder(String.join("\n", value)).create()));
-			
-			
+			if (search!=null) {
+				PopulateKeywordEvent populate = new PopulateKeywordEvent(search.getFoundKeyword(), search.getContext());
+				
+				Bukkit.getPluginManager().callEvent(populate);
+				
+				if (!populate.getCommands().isEmpty())
+					subComponent.setClickEvent(new ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND,
+							String.join("&&", populate.getDescription())));
+				
+				if (!populate.getDescription().isEmpty())
+					subComponent.setHoverEvent(new HoverEvent(net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT,
+							new ComponentBuilder(String.join("\n", populate.getDescription())).create()));
+			}
+
 			component.addExtra(subComponent);
 		}
 		
