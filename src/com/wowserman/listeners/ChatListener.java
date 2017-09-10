@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
 import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
@@ -32,11 +33,12 @@ public class ChatListener extends PacketAdapter {
 
 	public ChatListener(Plugin plugin) {
 		super(plugin, ListenerPriority.HIGHEST, PacketType.Play.Server.CHAT);
+		ProtocolLibrary.getProtocolManager().addPacketListener(this);
 	}
 	
 	@Override
 	public void onPacketSending(PacketEvent event) {
-		
+				
 		PacketContainer packet = event.getPacket();
 		StructureModifier<WrappedChatComponent> chatComponents = packet.getChatComponents();
 
@@ -103,8 +105,10 @@ public class ChatListener extends PacketAdapter {
 			
 			Bukkit.getPluginManager().callEvent(search);
 			
+			// System.out.print("Found Keyword in '" + split + "': " + search.hasFoundKeyword() + " value: '" + search.getFoundKeyword() + "'");
+			
 			if (search.hasFoundKeyword() && search.getFoundKeyword().length() != split.length()) {
-				
+								
 				map.put(search.getFoundKeyword(), search);
 				
 				int index = split.toLowerCase().indexOf(search.getFoundKeyword().toLowerCase());
@@ -141,7 +145,9 @@ public class ChatListener extends PacketAdapter {
 				i--;
 				
 				continue;
-			} else if (split.length()==0 || split==null)
+			} else if (search.hasFoundKeyword())
+				map.put(search.getFoundKeyword(), search);
+			else if (split.length()==0 || split==null)
 				continue;
 						
 			TextComponent component = new TextComponent(split);
@@ -184,7 +190,7 @@ public class ChatListener extends PacketAdapter {
 			final SearchForKeywordEvent search = map.get(subComponent.getText());
 			
 			if (search!=null) {
-				PopulateKeywordEvent populate = new PopulateKeywordEvent(search.getFoundKeyword(), search.getContext());
+				PopulateKeywordEvent populate = new PopulateKeywordEvent(search.getFoundKeyword(), search.getContext(), search.getID());
 				
 				Bukkit.getPluginManager().callEvent(populate);
 				
@@ -200,7 +206,7 @@ public class ChatListener extends PacketAdapter {
 			component.addExtra(subComponent);
 		}
 		
-		System.out.print("Finished Formatting Message in " + (System.currentTimeMillis()-startTime) + "ms.");
+		// System.out.print("Finished Formatting Message in " + (System.currentTimeMillis()-startTime) + "ms.");
 
 		msg.setJson(ComponentSerializer.toString(component));
 

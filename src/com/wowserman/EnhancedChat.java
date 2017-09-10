@@ -4,16 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.palmergames.bukkit.towny.object.Nation;
-import com.palmergames.bukkit.towny.object.Resident;
-import com.palmergames.bukkit.towny.object.Town;
-import com.palmergames.bukkit.towny.object.TownyUniverse;
+import com.wowserman.listeners.ChatListener;
+import com.wowserman.listeners.KeywordListener;
 
-import me.clip.placeholderapi.PlaceholderAPI;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -54,6 +49,19 @@ public class EnhancedChat extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
-		placeholders = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
+		if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI") == false) {
+			this.getLogger().severe("PlaceholderAPI	 is missing! This Plugin cannot run without it!");
+			this.setEnabled(false);
+			return;
+		}
+		
+		if (Bukkit.getPluginManager().isPluginEnabled("ProtocolLib") == false) {
+			this.getLogger().severe("ProtocolLib is missing! This Plugin cannot run without it!");
+			this.setEnabled(false);
+			return;
+		}
+		
+		new ChatListener(this);
+		new KeywordListener(this);
 	}
 }
