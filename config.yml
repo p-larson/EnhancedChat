@@ -3,34 +3,10 @@
 #    Developed by Wowserman
 #    https://www.spigotmc.org/members/wowserman.124342/
 #    =====================================================================================
-#
-#    Keyword Classification Cheatsheet
-#
-#    Per Offline Player Keywords
-#
-#
-#
-#    Vanilla Keywords
-#    
-#    
-#    
-#    
-#    
-#    Player Keywords
-#    Spigot Keywords
-#    
-#        World
-#    
-#    
-#    
-#    
-#    
-#    
-#    
 Plugin Settings:
-  Keywords are Case Sensitive: true
+  Keywords are Case Sensitive: false
   Plugin should Auto Update: true
-  Plugin should Run in Debug Mode: false
+  Plugin should Run in Debug Mode: true
   Plugin can take Annonomous Stats: true
   Players with Nicknames should be ignored: false
 #    =====================================================================================
@@ -43,16 +19,31 @@ Plugin Settings:
 #    
 #    Use this nice list of PlaceHolders in your Descriptions if you PlaceHolderAPI loaded.
 #    https://www.spigotmc.org/wiki/placeholderapi-placeholders/
-#
 #    
+#    Leave URL Blank if you aren't going to use it.    
+#
 Online Player Keyword:
-  enabled: true
-  onClick: "tpa %player_name%"
-  onHover:
+  commands:
+  - "/tpa %player_name%"
+  description:
   - "%player_name%"
   - "&b%towny_town%&f, &6%towny_nation%"
   - "&2%vault_eco_balance_formatted%"
-
-Town Keyword:
-  enabled: true
-  onClick: ""
+  - ""
+  - "&eClick to /tpa %player_name%"
+#    =====================================================================================
+#    
+#    URL/Link
+#    
+#    These Keywords are based on a single Player's Name. 
+#    For PlaceHolders, use the PlaceHolderAPI and make sure Player PlaceHolders is Enabled
+#    in the PlaceHolderAPI Config File (/plugins/PlaceHolderAPI/config.yml).
+#    
+#    Use this nice list of PlaceHolders in your Descriptions if you PlaceHolderAPI loaded.
+#    https://www.spigotmc.org/wiki/placeholderapi-placeholders/
+#    
+#    Leave URL Blank if you aren't going to use it.  
+URL: 
+  description: 
+  - "Click to Open URL"
+  - "&7&oThe URL might not be safe!"

@@ -1,11 +1,7 @@
 package com.wowserman.listeners;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import com.comphenix.protocol.PacketType;
@@ -17,7 +13,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 
-import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -28,6 +24,7 @@ import com.comphenix.protocol.wrappers.EnumWrappers.ChatType;
 import com.wowserman.EnhancedChat;
 import com.wowserman.api.PopulateKeywordEvent;
 import com.wowserman.api.SearchForKeywordEvent;
+import com.wowserman.settings.Settings;
 
 public class ChatListener extends PacketAdapter {
 
@@ -38,7 +35,7 @@ public class ChatListener extends PacketAdapter {
 	
 	@Override
 	public void onPacketSending(PacketEvent event) {
-				
+		
 		PacketContainer packet = event.getPacket();
 		StructureModifier<WrappedChatComponent> chatComponents = packet.getChatComponents();
 
@@ -48,168 +45,87 @@ public class ChatListener extends PacketAdapter {
 		WrappedChatComponent msg = chatComponents.read(0);
 
 		TextComponent original = new TextComponent(ComponentSerializer.parse(msg.getJson()));
-
-		final String fullMessage = original.toLegacyText();
-				
+		
 		if (EnhancedChat.shouldIgnore(original))
 			return;
 		
 		final long startTime = System.currentTimeMillis();
 		
-		List<TextComponent> list = new ArrayList<TextComponent>();
+		this.enhance(original, event.getPlayer());
 		
-		List<String> splits = new ArrayList<String>();
+		if (Settings.isDebug())
+			this.plugin.getLogger().info("Finished Formatting Message in " + (System.currentTimeMillis()-startTime) + "ms.");
 		
-		HashMap<String, SearchForKeywordEvent> map = new HashMap<String, SearchForKeywordEvent>();
+		msg.setJson(ComponentSerializer.toString(original));
 		
-		splits.addAll(Arrays.asList(fullMessage.split(String.valueOf(ChatColor.COLOR_CHAR))));
+		chatComponents.write(0, msg);
 		
-		for (int index = 0; index < splits.size(); index++)
-			splits.set(index, String.valueOf(ChatColor.COLOR_CHAR) + splits.get(index));
+	}
+	
+	public void enhance(BaseComponent component, Player context) {
 		
-		ChatColor lastColor = null;
-		ChatColor lastFormat = null;
-		
-		int size = splits.size();
-		
-		for (int i = 0; i < size; i++) {
-			String split = splits.get(i);
+		if (component instanceof TextComponent) {
+			TextComponent tComponent = (TextComponent) component;
 			
-			if ((split.length()==1 && split.charAt(0)==ChatColor.COLOR_CHAR) || split.length()==0) {
-				splits.remove(i);
-				size = splits.size();
-				i--;
-				continue;
-			}
+			final String text = tComponent.getText();
 			
-			if (split.length()>=2 && split.startsWith(String.valueOf(ChatColor.COLOR_CHAR))) {
-				ChatColor color = ChatColor.getByChar(split.charAt(1));
-				
-				if (EnhancedChat.isColor(color)) {
-					lastColor = color;
-					lastFormat = null;
-				} else lastFormat = color;
-				
-				if (split.length()==2) {
-					splits.remove(i);
-					size = splits.size();
-					i--;
-					continue;
-				} else {
-					split = split.substring(2, split.length());
-				}
-				
-			}
-			
-			SearchForKeywordEvent search = new SearchForKeywordEvent(split, event.getPlayer());
+			SearchForKeywordEvent search = new SearchForKeywordEvent(text, context.getName());
 			
 			Bukkit.getPluginManager().callEvent(search);
 			
-			// System.out.print("Found Keyword in '" + split + "': " + search.hasFoundKeyword() + " value: '" + search.getFoundKeyword() + "'");
-			
-			if (search.hasFoundKeyword() && search.getFoundKeyword().length() != split.length()) {
-								
-				map.put(search.getFoundKeyword(), search);
+			if (text != null && search.hasFoundKeyword() && !search.isOnlyKeyword()) {
 				
-				int index = split.toLowerCase().indexOf(search.getFoundKeyword().toLowerCase());
+				int index = text.toLowerCase().indexOf(search.getFoundKeyword().toLowerCase());
 				
-				String cut = split.substring(index, index + search.getFoundKeyword().length());
+				String first = index != 0 ? text.substring(0, index):null;
 				
-				List<String> remainders = new ArrayList<String>();
+				String cut = text.substring(index, index + search.getFoundKeyword().length());
+						
+				String last = cut.length() + index <= text.length() ? text.substring(cut.length() + index, text.length()):null;
 				
-				if (index!=0) {
-					remainders.add(split.substring(0, index));
+				if (first==null) {
+					tComponent.setText(cut);
+					
+					tComponent.addExtra(last);
+				} else {
+					tComponent.setText(first);
+					
+					tComponent.addExtra(cut);
+					tComponent.addExtra(last);
 				}
-				remainders.add(cut);
-				
-				if (cut.length() + index <= split.length())
-					remainders.add(
-							split.substring
-							(cut.length() + index, 
-									split.length()));
-
-				List<String> newSplits = new ArrayList<String>();
-				
-				newSplits.addAll(splits.subList(0, i));
-
-				newSplits.addAll(remainders);
-				
-				newSplits.addAll(splits.subList(i + 1, splits.size()));
-				
-				size = newSplits.size();
-				
-				splits = newSplits;
-				
-				split = cut;
-				
-				i--;
-				
-				continue;
-			} else if (search.hasFoundKeyword())
-				map.put(search.getFoundKeyword(), search);
-			else if (split.length()==0 || split==null)
-				continue;
-						
-			TextComponent component = new TextComponent(split);
-			
-			if (lastFormat != null) {
-				if (lastFormat==ChatColor.BOLD)
-					component.setBold(true);
-				else if (lastFormat==ChatColor.ITALIC)
-					component.setItalic(true);
-				else if (lastFormat==ChatColor.STRIKETHROUGH)
-					component.setItalic(true);
-				else if (lastFormat==ChatColor.MAGIC)
-					component.setObfuscated(true);
-				else if (lastFormat==ChatColor.UNDERLINE)
-					component.setUnderlined(true);
-				else component.setColor(lastFormat);
 			}
 			
-			if (lastColor != null) {
-				if (lastColor==ChatColor.BOLD)
-					component.setBold(true);
-				else if (lastColor==ChatColor.ITALIC)
-					component.setItalic(true);
-				else if (lastColor==ChatColor.STRIKETHROUGH)
-					component.setItalic(true);
-				else if (lastColor==ChatColor.MAGIC)
-					component.setObfuscated(true);
-				else if (lastColor==ChatColor.UNDERLINE)
-					component.setUnderlined(true);
-				else component.setColor(lastColor);
+			PopulateKeywordEvent populate = new PopulateKeywordEvent(tComponent.getText(), search.getContext(), search.getID());
+			
+			Bukkit.getPluginManager().callEvent(populate);
+			
+			if (Settings.isDebug())
+				this.plugin.getLogger().info("Description: " + String.join(", ", populate.getDescription()) + "|" + "Commands: " + String.join(", ", populate.getCommands()) + "|" + "URL: " + populate.getURL());
+			
+			if (!populate.getCommands().isEmpty()) {
+				tComponent.setClickEvent(new ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND,
+						String.join("&&", EnhancedChat.colorify(populate.getCommands()))));
+				if (Settings.isDebug())
+					this.plugin.getLogger().info("~ Has Commands.");
 			}
 			
-			list.add(component);
-		}
-				
-		TextComponent component = new TextComponent("");
-				
-		for (TextComponent subComponent:list) {
-						
-			final SearchForKeywordEvent search = map.get(subComponent.getText());
-			
-			if (search!=null) {
-				PopulateKeywordEvent populate = new PopulateKeywordEvent(search.getFoundKeyword(), search.getContext(), search.getID());
-				
-				Bukkit.getPluginManager().callEvent(populate);
-				
-				if (!populate.getCommands().isEmpty())
-					subComponent.setClickEvent(new ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND,
-							String.join("&&", populate.getDescription())));
-				
-				if (!populate.getDescription().isEmpty())
-					subComponent.setHoverEvent(new HoverEvent(net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT,
-							new ComponentBuilder(String.join("\n", populate.getDescription())).create()));
+			if (!populate.getDescription().isEmpty()) {
+				tComponent.setHoverEvent(new HoverEvent(net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT,
+						new ComponentBuilder(String.join("\n", EnhancedChat.colorify(populate.getDescription()))).create()));
+				this.plugin.getLogger().info("~ Has Description.");
 			}
-
-			component.addExtra(subComponent);
+			
+			if (populate.hasURL()) {
+				tComponent.setClickEvent(new ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.OPEN_URL,
+						populate.getURL()));
+				this.plugin.getLogger().info("~ Has URL.");
+			}
 		}
 		
-		// System.out.print("Finished Formatting Message in " + (System.currentTimeMillis()-startTime) + "ms.");
-
-		msg.setJson(ComponentSerializer.toString(component));
-
-		chatComponents.write(0, msg);
+		if (component.getExtra()!=null) {
+			
+			for (BaseComponent extra:component.getExtra())
+				this.enhance(extra, context);
+		}
 	}
 }

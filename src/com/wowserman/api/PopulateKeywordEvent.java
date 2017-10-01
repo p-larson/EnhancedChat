@@ -3,15 +3,18 @@ package com.wowserman.api;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 public class PopulateKeywordEvent extends Event {
 
-	private final Player context;
-
+	private final String context;
+		
 	private final String keyword;
+	
+	private boolean completed = false;
+	
+	private String url = "";
 
 	private final List<String> onClick = new ArrayList<String>(), onHover = new ArrayList<String>();
 
@@ -24,8 +27,20 @@ public class PopulateKeywordEvent extends Event {
 	public long getID() {
 		return id;
 	}
+	
+	public void setURL(String url) {
+		this.url = url;
+	}
+	
+	public String getURL() {
+		return url;
+	}
+	
+	public boolean hasURL() {
+		return url!=null && url.length()!=0;
+	}
 
-	public PopulateKeywordEvent(final String keyword, Player context, long id) {
+	public PopulateKeywordEvent(final String keyword, String context, long id) {
 		this.keyword = keyword;
 		this.context = context;
 		this.id = id;
@@ -42,11 +57,11 @@ public class PopulateKeywordEvent extends Event {
 	private static final HandlerList HANDLERS = new HandlerList();
 
 	/**
-	 * Player that is in the Context.
+	 * String that is in the Context.
 	 * 
 	 * @return
 	 */
-	public Player getContext() {
+	public String getContext() {
 		return context;
 	}
 
@@ -65,6 +80,14 @@ public class PopulateKeywordEvent extends Event {
 
 	public static HandlerList getHandlerList() {
 		return HANDLERS;
+	}
+
+	public boolean isComplete() {
+		return completed;
+	}
+
+	public void complete() {
+		this.completed = true;
 	}
 
 }
