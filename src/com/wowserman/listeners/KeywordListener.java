@@ -21,7 +21,7 @@ public class KeywordListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void search(SearchForKeywordEvent event) {
-				
+		
 		for (String word:event.getWords()) {
 			if (word.toLowerCase().startsWith("https://") || word.toLowerCase().startsWith("http://")) {
 				

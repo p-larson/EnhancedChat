@@ -9,12 +9,10 @@ import org.bukkit.event.HandlerList;
 public class PopulateKeywordEvent extends Event {
 
 	private final String context;
-		
+
 	private final String keyword;
-	
-	private boolean completed = false;
-	
-	private String url = "";
+
+	private String url = "", insertion = "";
 
 	private final List<String> onClick = new ArrayList<String>(), onHover = new ArrayList<String>();
 
@@ -23,21 +21,33 @@ public class PopulateKeywordEvent extends Event {
 	public boolean equalsID(long otherID) {
 		return id == otherID;
 	}
-	
+
 	public long getID() {
 		return id;
 	}
-	
+
 	public void setURL(String url) {
 		this.url = url;
 	}
-	
+
 	public String getURL() {
 		return url;
 	}
-	
+
 	public boolean hasURL() {
-		return url!=null && url.length()!=0;
+		return url != null && url.length() != 0;
+	}
+
+	public void setInsertion(String insertion) {
+		this.insertion = insertion;
+	}
+
+	public String getInsertion() {
+		return insertion;
+	}
+
+	public boolean hasInsertion() {
+		return insertion != null && insertion.length() != 0;
 	}
 
 	public PopulateKeywordEvent(final String keyword, String context, long id) {
@@ -80,14 +90,6 @@ public class PopulateKeywordEvent extends Event {
 
 	public static HandlerList getHandlerList() {
 		return HANDLERS;
-	}
-
-	public boolean isComplete() {
-		return completed;
-	}
-
-	public void complete() {
-		this.completed = true;
 	}
 
 }

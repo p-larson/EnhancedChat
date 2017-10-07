@@ -5,7 +5,7 @@ import java.util.HashMap;
 public class KeywordManager {
 
 	private static final HashMap<String, Long> ids = new HashMap<String, Long>();
-	
+
 	/**
 	 * Create a Unique ID for a Keyword Catagory
 	 * 

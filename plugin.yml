@@ -2,4 +2,4 @@ name: EnhancedChat
 author: Wowserman
 main: com.wowserman.EnhancedChat
 version: 1.0
-softdepend: [ProtocolLib, PlaceholderAPI]
+depend: [ProtocolLib, PlaceholderAPI]
