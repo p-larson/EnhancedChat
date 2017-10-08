@@ -70,7 +70,7 @@ public class ChatListener extends PacketAdapter {
 
 	}
 
-	synchronized public void enhance(BaseComponent component, Player context) {
+	public void enhance(BaseComponent component, Player context) {
 
 		if (component instanceof TextComponent) {
 			TextComponent tComponent = (TextComponent) component;
