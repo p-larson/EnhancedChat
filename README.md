@@ -21,7 +21,7 @@ When a keyword is found, this event is called to "ask" plugins what the keyword'
 ###### Example
 We want to add a hover-tip to every player's name in chat. We first need to make an **ID** to classify keywords as player names.
 
-`final long PLAYER_NAME_KEYWORD_ID = KeywordManager.createID("player-names");`
+`private static final long PLAYER_NAME_KEYWORD_ID = KeywordManager.createID("player-names");`
 
 We'll use this to tag our keywords we find in *SearchForKeywordEvent* so we don't have to recheck in *PopulateKeywordEvent*
 
