@@ -27,4 +27,34 @@ We'll use this to tag our keywords we find in *SearchForKeywordEvent* so we don'
 
 Next, make a class that implements *Listener*, this is where we'll handle *SearchForKeywordEvent* and *PopulateKeywordEvent*.
 
-I called our *Listener* class KeywordListener, you can call it whatever you'd like. Now inside KeywordListener, create two methods where one passes a argument that is a *SearchForKeywordEvent*, and one that is *PopulateKeywordEvent*
+I called our *Listener* class `KeywordListener`, you can call it whatever you'd like. Now inside `KeywordListener`, create two methods where one passes a argument that is a *SearchForKeywordEvent*, and one that is *PopulateKeywordEvent*, then add the *EventHandler* annotation to both of them.
+
+```
+@EventHandler
+public void search(SearchForKeywordEvent event) {
+
+}
+
+@EventHandler
+public void populate(PopulateKeywordEvent event) {
+
+}
+```
+
+Now that we have that set up, we want to work inside our *SearchForKeywordEvent* *EventHandler* method.
+
+We're checking if the message contains any player's username. and if it does: set the event's keyword to the player's name, then set the id of the event to our  *long* `PLAYER_NAME_KEYWORD_ID`, then because we're talking about a player, our context would be that player, so we can just set the event's context as the player's name. To do that, it'd look something like this
+```
+for (Player player:Bukkit.getOnlinePlayers()) {
+	if (event.containsCustomKeyword(player.getName())) {
+		event.setKeyword(player.getName());
+		event.setID(PLAYER_NAME_KEYWORD_ID);
+		event.setContext(player.getName());
+	}
+}
+```
+
+
+
+
+
