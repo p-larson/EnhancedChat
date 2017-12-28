@@ -1,5 +1,5 @@
 # Chat Interception 
-# (Adding hover-tips, commands, insertions, and urls to text in chat): 
+(Adding hover-tips, commands, insertions, and urls to text in chat): 
 
   This 'overrides' / 'rewrites' chat. Whenever someone sends 
   a message in chat, wether that is from a user or a plugin,
