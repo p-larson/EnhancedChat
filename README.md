@@ -1,4 +1,4 @@
-# Chat Interception 
+Chat Interception 
 (Adding hover-tips, commands, insertions, and urls to text in chat): 
 
   This 'overrides' / 'rewrites' chat. Whenever someone sends 
