@@ -27,7 +27,7 @@ public class PopulateKeywordEvent extends Event {
 	}
 
 	public void setURL(String url) {
-		this.url = url;
+		this.url = fix(url);
 	}
 
 	public String getURL() {
@@ -39,7 +39,7 @@ public class PopulateKeywordEvent extends Event {
 	}
 
 	public void setInsertion(String insertion) {
-		this.insertion = insertion;
+		this.insertion = fix(insertion);
 	}
 
 	public String getInsertion() {
@@ -56,18 +56,56 @@ public class PopulateKeywordEvent extends Event {
 		this.id = id;
 	}
 
+	/**
+	 * Deprecated because you need to know this returns a Clone of the Description.
+	 * Do not just add to this List expecting it to work, it won't. 
+	 * Use the supported methods:
+	 * 
+	 * @return Clone of the Description.
+	 */
+	@Deprecated
 	public List<String> getCommands() {
 		return onClick;
 	}
-
+	
+	/**
+	 * Deprecated because you need to know this returns a Clone of the Description.
+	 * Do not just add to this List expecting it to work, it won't. 
+	 * Use the supported methods:
+	 * 
+	 * @return Clone of the Description.
+	 */
+	@Deprecated
 	public List<String> getDescription() {
-		return onHover;
+		return new ArrayList<String>(onHover);
+	}
+	
+	public void addDescription(String line) {
+		this.onHover.add(fix(line));
+	}
+	
+	public void setDescription(List<String> replacement) {
+		this.onHover.clear();
+		replacement.forEach(value -> this.onHover.add(fix(value)));
+	}
+	
+	public void addCommand(String line) {
+		this.onHover.add(fix(line));
+	}
+	
+	public void setCommands(List<String> replacement) {
+		this.onClick.clear();
+		replacement.forEach(value -> this.onClick.add(fix(value)));
+	}
+	
+	private final String fix(String line) {
+		return line.replaceAll("%context%", context);
 	}
 
 	private static final HandlerList HANDLERS = new HandlerList();
 
 	/**
-	 * String that is in the Context.
+	 * Context of the keyword, for example a player's name when talking about towny residents.
 	 * 
 	 * @return
 	 */
@@ -76,7 +114,7 @@ public class PopulateKeywordEvent extends Event {
 	}
 
 	/**
-	 * The Keyword in Context.
+	 * The Keyword highlighted.
 	 * 
 	 * @return
 	 */

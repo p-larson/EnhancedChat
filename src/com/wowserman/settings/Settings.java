@@ -3,13 +3,14 @@ package com.wowserman.settings;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.Triple;
-import org.bukkit.configuration.ConfigurationSection;
+import com.wowserman.EnhancedChat;
 
 public class Settings {
 
 	private static boolean caseSensitive = false, debug = false, ignoreNicknames = false, stats = false,
 			autoUpdate = false;
+	
+	private static KeywordSetting player, url;
 
 	public static boolean isDebug() {
 		return debug;
@@ -50,38 +51,24 @@ public class Settings {
 	public static boolean isCaseSensitive() {
 		return caseSensitive;
 	}
-
-	private static List<String> playerOnClick = new ArrayList<String>(), playerOnHover = new ArrayList<String>(),
-			urlOnHover = new ArrayList<String>();
-
-	public static List<String> getPlayerOnClick() {
-		return playerOnClick;
+	
+	public static KeywordSetting getPlayerSettings() {
+		return player;
 	}
 
-	public static List<String> getPlayerOnHover() {
-		return playerOnHover;
+	public static KeywordSetting getUrlSettings() {
+		return url;
 	}
+	
+	public static void load(EnhancedChat plugin) {
+		Settings.setAutoUpdate(plugin.getConfig().getBoolean("Plugin Settings.Plugin should Auto Update"));
+		Settings.setCaseSensitive(plugin.getConfig().getBoolean("Plugin Settings.Keywords are Case Sensitive"));
+		Settings.setDebug(plugin.getConfig().getBoolean("Plugin Settings.Plugin should Run in Debug Mode"));
+		Settings.setIgnoreNicknames(plugin.getConfig().getBoolean("Plugin Settings.Players with Nicknames should be ignored"));
+		Settings.setStats(plugin.getConfig().getBoolean("Plugin Settings.Plugin can take Annonomous Stats"));
 
-	public static List<String> getURLOnHover() {
-		return urlOnHover;
-	}
-
-	/**
-	 * @param section
-	 *            The Section of a Configuration File that is being read.
-	 * @return Triple of the Description, Commands, and URL.
-	 */
-	public static Triple<List<String>, List<String>, String> read(ConfigurationSection section) {
-
-		List<String> description = new ArrayList<String>(), commands = new ArrayList<String>();
-		String url = "";
-
-		description = section.getStringList("description") != null ? section.getStringList("description") : description;
-		commands = section.getStringList("commands") != null ? section.getStringList("commands") : commands;
-
-		url = section.getString("url", url);
-
-		return Triple.of(description, commands, url);
+		player = KeywordSetting.read(plugin.getConfig().getConfigurationSection("Online Player Keyword"));
+		url = KeywordSetting.read(plugin.getConfig().getConfigurationSection("URL Keyword"));
 	}
 
 	public static List<String> parseCommands(String commandString) {

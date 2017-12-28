@@ -60,7 +60,8 @@ public class KeywordListener implements Listener {
 			
 			event.setURL(event.getKeyword());
 			
-			event.getDescription().addAll(PlaceholderAPI.setPlaceholders(null, Settings.getURLOnHover()));
+			event.setDescription(PlaceholderAPI.setPlaceholders(null, Settings.getUrlSettings().getDescription()));
+			
 			
 		}
 		
@@ -69,8 +70,8 @@ public class KeywordListener implements Listener {
 		
 		Player context = Bukkit.getPlayer(event.getContext());
 		
-		event.getDescription().addAll(PlaceholderAPI.setPlaceholders(context, Settings.getPlayerOnHover()));
-		event.getCommands().addAll(PlaceholderAPI.setPlaceholders(context, Settings.getPlayerOnClick()));
+		event.setDescription(PlaceholderAPI.setPlaceholders(context, Settings.getPlayerSettings().getDescription()));
+		event.setCommands(PlaceholderAPI.setPlaceholders(context, Settings.getPlayerSettings().getCommands()));
 	}
 	
 	public KeywordListener(EnhancedChat instance) {

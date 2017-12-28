@@ -70,6 +70,7 @@ public class ChatListener extends PacketAdapter {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	public void enhance(BaseComponent component, Player context) {
 
 		if (component instanceof TextComponent) {
