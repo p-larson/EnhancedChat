@@ -84,8 +84,8 @@ if (event.equalsID(PLAYER_NAME_KEYWORD_ID )) {
 }
 ```
 
+Our Listener class is now complete. All you have to do now is register the Listener we just made in your plugin. If you look at the animated gif, you can see what happens when the plugin is running on a server.
 
+...
 
-
-
-
+If you want to see a complete version of the example plugin, link here.
