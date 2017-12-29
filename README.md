@@ -81,6 +81,10 @@ if (event.equalsID(PLAYER_NAME_KEYWORD_ID )) {
 	// We could also just do "/tpa " + event.getContext();
 	// Either one works, we're just using "/tpa %context%" as it's built into the API.
 	event.addCommand("/tpa %context%");
+	// Lets also add a hover-tip just to show a description of what will happen when clicked.
+	event.addDescription("Click me to Teleport to %context%");
+	event.addDescription("Performs:");
+	event.addDescription("/tpa %context%");
 }
 ```
 
