@@ -92,4 +92,4 @@ Our Listener class is now complete. All you have to do now is register the Liste
 
 ![GIF of Test Plugin](https://media.giphy.com/media/3o7525RXOBdmJWVDK8/giphy.gif)
 
-If you want to see a complete version of the example plugin, link here.
+If you want to see a complete version of the example plugin, link[https://github.com/Wowserman/EnhancedChat-Example] here.
